@@ -45,29 +45,6 @@ async function completeAttemptRemote(record) {
 // ======= UI refs =======
 const stage = document.getElementById("stage");
 const ctx = stage.getContext("2d");
-
-function handlePoint(clientX, clientY){
-  const rect = stage.getBoundingClientRect();
-  const scaleX = stage.width / rect.width;
-  const scaleY = stage.height / rect.height;
-  const x = (clientX - rect.left) * scaleX;
-  const y = (clientY - rect.top) * scaleY;
-  const hs = data.scenes[current].hotspots;
-  let matched = false;
-  for (let i=0;i<hs.length;i++){
-    const h = hs[i];
-    if (Math.hypot(x-h.x, y-h.y) <= (h.r + tolerance)) {
-      const set = sceneState[current];
-      if (!set.has(i)) { set.add(i); spawnRevealDot(h.x,h.y,h.r); }
-      matched = true;
-      break;
-    }
-  }
-  if (!matched && typeof debugMark === 'function' && window.DEBUG_MODE) { debugMark(x,y); }
-}
-stage.addEventListener("click", (e)=> handlePoint(e.clientX, e.clientY));
-stage.addEventListener("touchstart", (e)=>{ const t=e.touches[0]; if(!t) return; handlePoint(t.clientX, t.clientY); e.preventDefault(); }, {passive:false});
-
 const btnPrev = document.getElementById("btnPrev");
 const btnNext = document.getElementById("btnNext");
 const btnHint = document.getElementById("btnHint");
@@ -93,12 +70,11 @@ const btnReplay = document.getElementById("btnReplay");
 const submitStatus = document.getElementById("submitStatus");
 
 // ======= Scenes data =======
-const data = { "tolerance": 28, "scenes": [{ "file": "assets/scenes/scene1.png", "title": "Packing Line", "hotspots": [{ "x": 798, "y": 59, "r": 30, "tag": "no_hairnet", "desc": "No hairnet" }, { "x": 758, "y": 184, "r": 80, "tag": "beard snood", "desc": "No beards snood" }, { "x": 831, "y": 126, "r": 80, "tag": "no_earplug", "desc": "No earplug" }, { "x": 766, "y": 118, "r": 30, "tag": "No_safety_glasses", "desc": "No Safety glasses" }, { "x": 811, "y": 402, "r": 30, "tag": "drink_on_packing_area", "desc": "Drink on packing area" }, { "x": 260, "y": 340, "r": 30, "tag": "box_on_the_floor", "desc": "Box on the floor" }] }, { "file": "assets/scenes/scene2.png", "title": "Mixing Area", "hotspots": [{ "x": 616, "y": 150, "r": 80, "tag": "ear_out_of_hairnet", "desc": "Ear out of hairnet and no earplug" }, { "x": 707, "y": 161, "r": 30, "tag": "no_safety_glasses", "desc": "No Safety glasses" }, { "x": 373, "y": 530, "r": 30, "tag": "No_colour_coding", "desc": "No colour coding" }, { "x": 551, "y": 481, "r": 80, "tag": "no_colour_coding", "desc": "No colour coding" }, { "x": 319, "y": 48, "r": 80, "tag": "dirty_wall", "desc": "Dirty wall" }, { "x": 956, "y": 260, "r": 80, "tag": "open_bin", "desc": "Opened bin" }] }, { "file": "assets/scenes/scene3.png", "title": "Cooling Racks", "hotspots": [{ "x": 139, "y": 589, "r": 80, "tag": "tray_on_floor", "desc": "Tray on floor" }, { "x": 904, "y": 761, "r": 80, "tag": "product_floor, "desc": "Product on the floor" }, { "x": 358, "y": 725, "r": 80, "tag": "wood_pallet", "desc": "Pallet in the production floor" }] }, { "file": "assets/scenes/scene4.png", "title": "Labelling Station", "hotspots": [{ "x": 522, "y": 628, "r": 80, "tag": "Label_floor", "desc": "Labels on the floor" }, { "x": 408, "y": 451, "r": 80, "tag": "ink_spillage", "desc": "Ink Spillage" }, { "x": 689, "y": 371, "r": 80, "tag": "open_product", "desc": "Open product" }] }, { "file": "assets/scenes/scene5.png", "title": "Line Start", "hotspots": [{ "x": 223, "y": 355, "r": 80, "tag": "flaky_paint", "desc": "Flaky paint" }, { "x": 51, "y": 457, "r": 80, "tag": "Knife_near", "desc": "Knife near the line" }, { "x": 363, "y": 332, "r": 80, "tag": "pallet_wall", "desc": "Pallet touching the wall" }] }] };
+const data = { "tolerance": 28, "scenes": [{ "file": "assets/scenes/scene1.png", "title": "Packing Line", "hotspots": [{ "x": 905, "y": 180, "r": 45, "tag": "no_hairnet", "desc": "No hairnet" }, { "x": 835, "y": 470, "r": 26, "tag": "jewelry", "desc": "Jewelry in production" }, { "x": 775, "y": 560, "r": 34, "tag": "open_drink", "desc": "Open drink in production" }, { "x": 235, "y": 440, "r": 55, "tag": "boxes_on_belt", "desc": "Cardboard on belt" }, { "x": 420, "y": 465, "r": 60, "tag": "boxes_on_belt", "desc": "Cardboard on belt" }, { "x": 170, "y": 615, "r": 32, "tag": "knife_left", "desc": "Knife left on line" }] }, { "file": "assets/scenes/scene2.png", "title": "Mixing Area", "hotspots": [{ "x": 160, "y": 210, "r": 60, "tag": "mold_wall", "desc": "Mold on wall" }, { "x": 1040, "y": 520, "r": 60, "tag": "open_bin", "desc": "Open bin" }, { "x": 600, "y": 730, "r": 70, "tag": "floor_spill", "desc": "Wet floor / spill" }, { "x": 535, "y": 570, "r": 24, "tag": "nail_polish", "desc": "Nail polish in production" }] }, { "file": "assets/scenes/scene3.png", "title": "Cooling Racks", "hotspots": [{ "x": 1040, "y": 740, "r": 60, "tag": "tray_on_floor", "desc": "Tray on floor" }, { "x": 240, "y": 735, "r": 80, "tag": "pallet_film", "desc": "Pallet with film in area" }, { "x": 360, "y": 380, "r": 70, "tag": "dirty_rack", "desc": "Dirty/moldy rack" }] }, { "file": "assets/scenes/scene4.png", "title": "Labelling Station", "hotspots": [{ "x": 330, "y": 560, "r": 50, "tag": "ink_leak", "desc": "Ink leaking" }, { "x": 470, "y": 740, "r": 95, "tag": "labels_on_floor", "desc": "Labels on floor" }, { "x": 690, "y": 520, "r": 65, "tag": "unlabeled_wip", "desc": "Unlabeled WIP container" }] }, { "file": "assets/scenes/scene5.png", "title": "Line Start", "hotspots": [{ "x": 160, "y": 560, "r": 35, "tag": "knife_left", "desc": "Knife left on line" }, { "x": 360, "y": 560, "r": 45, "tag": "unprotected_product", "desc": "Unprotected product" }, { "x": 520, "y": 560, "r": 45, "tag": "unprotected_product", "desc": "Unprotected product" }, { "x": 760, "y": 440, "r": 120, "tag": "boxes_wrong_place", "desc": "Boxes behind machine" }] }] };
 
 // ======= State =======
 let current = 0;
 let found = new Set();
-let sceneState = data.scenes.map(() => new Set());
 let img = new Image();
 let tolerance = data.tolerance ?? 28;
 let revealDots = [];
@@ -274,8 +250,7 @@ startGame.addEventListener("click", async () => {
   }
 
   localStorage.setItem("gmp_player", playerName); // UX only
-  window.playerName = playerName;
-playerBadge.textContent = "Player: " + playerName;
+  playerBadge.textContent = "Player: " + playerName;
   loginScreen.style.display = "none";
 });
 
@@ -323,8 +298,7 @@ btnReplay.addEventListener("click", () => {
 // ======= Init =======
 const existing = localStorage.getItem("gmp_player");
 if (existing) {
-  window.playerName = playerName;
-playerBadge.textContent = "Player: " + existing;
+  playerBadge.textContent = "Player: " + existing;
 }
 
 loadScene(0);
