@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GMP Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Login overlay -->
+  <div id="loginScreen" class="overlay">
+    <div class="login-box">
+      <h2>Welcome to GMP Game</h2>
+      <p>Please enter your name to start:</p>
+      <input type="text" id="playerName" placeholder="Your name" />
+      <button id="startGame">Start</button>
+      <p class="hint">One attempt per name (checked online via Google Apps Script).</p>
+      <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+        <button id="btnApiTest" class="secondary" title="Quickly test your Apps Script URL">API Self‑Test</button>
+      </div>
+      <p id="apiStatus" class="hint" style="margin-top:8px"></p>
+    </div>
+  </div>
+
+  <!-- Results overlay -->
+  <div id="resultsScreen" class="overlay" style="display:none">
+    <div class="login-box" style="width:520px">
+      <h2>Results</h2>
+      <p id="scoreLine"></p>
+      <div id="missedWrap" style="text-align:left;max-height:220px;overflow:auto;margin-top:8px"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
+        <button id="btnReplay" class="secondary">Close</button>
+      </div>
+      <p class="hint" id="submitStatus" style="margin-top:10px"></p>
+    </div>
+  </div>
+
+  <div class="app">
+    <header>
+      \1
+
+      <div class="controls">
+        <div class="control-row">
+          <button id="btnPrev" class="secondary">◀ Prev</button>
+          <div id="sceneTitle" class="sceneTitle">Scene</div>
+          <button id="btnNext" class="secondary">Next ▶</button>
+        </div>
+        <div class="control-row">
+          <button id="btnHint" class="secondary">Hint</button>
+          <button id="btnReveal" class="secondary">Reveal All</button>
+          <button id="btnReset" class="secondary">Reset Scene</button>
+          <button id="btnFinish" class="primary">Finish</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <span id="playerBadge" class="badge"></span>
+        <button id="btnPrev">◀ Prev</button>
+        <div id="sceneTitle">Scene</div>
+        <button id="btnNext">Next ▶</button>
+        <div class="spacer"></div>
+        <button id="btnHint">Hint</button>
+        <button id="btnReveal">Reveal All</button>
+        <button id="btnReset">Reset Scene</button>
+        <button id="btnFinish" class="primary">Finish</button>
+      </div>
+    </header>
+    <main>
+      <div class="left">
+        <div class="card">
+          <canvas id="stage" width="1200" height="800"></canvas>
+        </div>
+        <div class="status">
+          <div>Found: <span id="foundCount">0</span>/<span id="totalCount">0</span></div>
+          <div>Spotted issues:</div>
+          <ul id="foundList"></ul>
+        </div>
+      </div>
+      <aside class="right">
+        <div class="card info">
+          <h2>How to play</h2>
+          <ol>
+            <li>Click anywhere you see a potential GMP violation.</li>
+            <li>Use <b>Hint</b> to briefly highlight approximate areas.</li>
+            <li>Use <b>Reveal All</b> to show all answers (for training only).</li>
+            <li>Press <b>D</b> to toggle debug mode (admins): click to copy hotspot coordinates.</li>
+          </ol>
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <small>Auto‑generated illustrations. Internal training use.</small>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
